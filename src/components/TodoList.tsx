@@ -57,54 +57,58 @@ export const TaskList = () => {
                 </Form.Item>
                 <Button onClick={handleCreateTask}>Submit</Button>
             </Form>
-            <List
-                dataSource={filteredTasks}
-                renderItem={(task) => (
-                    <List.Item>
-                        {editTask && editTask.id === task.id ? (
-                            <div>
-                                <input
-                                    type="text"
-                                    value={editTask.title}
-                                    onChange={(e) => setEditTask({ ...editTask, title: e.target.value })}
-                                />
-                                <button
-                                    onClick={() => {
-                                        UpdateTask.mutate(editTask);
-                                        setEditTask(null);
-                                    }}
-                                >
-                                    Save
-                                </button>
-                            </div>
-                        ) : (
-                            <div>
-                                <input
-                                    type="checkbox"
-                                    checked={task.completed}
-                                    onChange={() => toggleTask.mutate(task)}
-                                />
-                                <span
-                                    style={{
-                                        textDecoration: task.completed ? 'line-through' : 'none',
-                                        marginRight: '8px',
-                                    }}
-                                >
-                                    {task.title}
-                                </span>
-                                <button
-                                    onClick={() => {
-                                        setEditTask(task);
-                                    }}
-                                >
-                                    Update
-                                </button>
-                                <button onClick={() => deleteTask.mutate(task.id)}>Delete</button>
-                            </div>
-                        )}
-                    </List.Item>
-                )}
-            />
+            <div className="button-wrap">
+                <List
+                    dataSource={filteredTasks}
+                    renderItem={(task) => (
+                        <List.Item>
+                            {editTask && editTask.id === task.id ? (
+                                <div style={{
+                                    display: "flex",
+                                    gap: "0.3rem"
+                                }}>
+                                    <Input
+                                        value={editTask.title}
+                                        onChange={(e) => setEditTask({ ...editTask, title: e.target.value })}
+                                    />
+                                    <Button
+                                        onClick={() => {
+                                            UpdateTask.mutate(editTask);
+                                            setEditTask(null);
+                                        }}
+                                    >
+                                        Save
+                                    </Button>
+                                </div>
+                            ) : (
+                                <div>
+                                    <input
+                                        type="checkbox"
+                                        checked={task.completed}
+                                        onChange={() => toggleTask.mutate(task)}
+                                    />
+                                    <span
+                                        style={{
+                                            textDecoration: task.completed ? 'line-through' : 'none',
+                                            marginRight: '8px',
+                                        }}
+                                    >
+                                        {task.title}
+                                    </span>
+                                    <Button
+                                        onClick={() => {
+                                            setEditTask(task);
+                                        }}
+                                    >
+                                        Update
+                                    </Button>
+                                    <Button onClick={() => deleteTask.mutate(task.id)}>Delete</Button>
+                                </div>
+                            )}
+                        </List.Item>
+                    )}
+                />
+            </div>
             {/* {filteredTasks.map((task) => (
                     <li key={task.id}>
                         {editTask && editTask.id === task.id ? (

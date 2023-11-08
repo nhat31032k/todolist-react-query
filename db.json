@@ -1,16 +1,6 @@
 {
   "tasks": [
     {
-      "id": "00994194-6f71-47a5-852c-4b8926539c03",
-      "title": "đi bộ",
-      "completed": false
-    },
-    {
-      "id": "2e6a8b78-23bf-4f3a-b9d0-7d60fa2aa19d",
-      "title": "nghe nhạc",
-      "completed": false
-    },
-    {
       "id": "d203314d-0863-4bcc-8791-182f59faf318",
       "title": "học",
       "completed": true
@@ -18,12 +8,12 @@
     {
       "id": "074cc648-3994-4ac3-936e-b67fe2463c2a",
       "title": "học bài",
-      "completed": false
+      "completed": true
     },
     {
-      "id": "3044f383-87e6-4c15-8417-194cf396a6d7",
-      "title": "bơi",
-      "completed": true
+      "id": "4008f792-bdea-48c2-9903-fe5577b84cc4",
+      "title": "cầu lông",
+      "completed": false
     }
   ]
 }
