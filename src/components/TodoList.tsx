@@ -1,8 +1,10 @@
-import { useQuery, useMutation, useQueryClient } from 'react-query';
+import { useQuery } from 'react-query';
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 import { useState } from 'react';
 import useDebouncedSearch from '../hooks/useDebounce';
+import { useAddTaskMutation, useDeleteTaskMutation, useToggleTaskCompletionMutation, useUpdateTaskMutation } from '../utils/function';
+// import ListItems from './ListItems';
 const API_BASE_URL = 'http://localhost:3001/api/tasks';
 type Task = {
     id: string;
@@ -14,51 +16,43 @@ export const TaskList = () => {
         const response = await axios.get(API_BASE_URL);
         return response.data;
     });
-    const queryClient = useQueryClient();
-
-    const addTaskMutation = useMutation(
-        (newTask: Task) => axios.post(API_BASE_URL, newTask),
-        {
-            onSettled: () => {
-                queryClient.invalidateQueries('tasks');
-            },
-        }
-    );
-    const updateTaskMutation = useMutation(
-        (updatedTask: Task) => axios.put(`${API_BASE_URL}/${updatedTask.id}`, updatedTask),
-        {
-            onSettled: () => {
-                queryClient.invalidateQueries('tasks');
-            },
-        }
-    );
-    const deleteTaskMutation = useMutation(
-        (taskId: string) => axios.delete(`${API_BASE_URL}/${taskId}`),
-        {
-            onSettled: () => {
-                queryClient.invalidateQueries('tasks');
-            },
-        }
-    );
+    const addTask = useAddTaskMutation();
+    const UpdateTask = useUpdateTaskMutation();
+    const deleteTask = useDeleteTaskMutation();
+    const toggleTask = useToggleTaskCompletionMutation()
     const [editTask, setEditTask] = useState<Task | null>(null);
-    const toggleTaskCompletionMutation = useMutation(
-        (task: Task) => axios.put(`${API_BASE_URL}/${task.id}`, { ...task, completed: !task.completed }),
-        {
-            onSettled: () => {
-                queryClient.invalidateQueries('tasks');
-            },
-        }
-    );
+   
     const [searchTerm, setSearchTerm] = useState('');
     const debouncedSearchTerm = useDebouncedSearch(searchTerm, 300);
-    const filteredTasks = tasks.filter((task) =>
+    const filteredTasks =tasks? tasks.filter((task) =>
         task.title.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
-    );
+    ) : [];
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const handleCreateTask = (e: any) =>{
+        e.preventDefault();
+        const title = e.target.taskTitle.value;
+        addTask.mutate({ id: uuidv4(), title, completed: false });
+        e.target.taskTitle.value = '';
+    }
     if (isLoading) {
         return <div>Loading...</div>;
     }
     return (
         <div>
+            <input
+                type="text"
+                placeholder="Search tasks"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <form
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                onSubmit={(e)=> handleCreateTask(e)}
+            >
+                <input type="text" name="taskTitle" placeholder="Add a task" />
+                <button type="submit">Submit</button>
+            </form>
             <ul>
                 {filteredTasks.map((task) => (
                     <li key={task.id}>
@@ -71,7 +65,7 @@ export const TaskList = () => {
                                 />
                                 <button
                                     onClick={() => {
-                                        updateTaskMutation.mutate(editTask);
+                                        UpdateTask.mutate(editTask);
                                         setEditTask(null);
                                     }}
                                 >
@@ -83,7 +77,7 @@ export const TaskList = () => {
                                 <input
                                     type="checkbox"
                                     checked={task.completed}
-                                    onChange={() => toggleTaskCompletionMutation.mutate(task)}
+                                    onChange={() => toggleTask.mutate(task)}
                                 />
                                 {task.title}
                                 <button
@@ -93,30 +87,12 @@ export const TaskList = () => {
                                 >
                                     Update
                                 </button>
-                                <button onClick={() => deleteTaskMutation.mutate(task.id)}>Delete</button>
+                                <button onClick={() => deleteTask.mutate(task.id)}>Delete</button>
                             </div>
                         )}
                     </li>
                 ))}
             </ul>
-            <input
-                type="text"
-                placeholder="Search tasks"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <form
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                onSubmit={(e: any) => {
-                    e.preventDefault();
-                    const title = e.target.taskTitle.value;
-                    addTaskMutation.mutate({ id: uuidv4(), title, completed: false });
-                    e.target.taskTitle.value = '';
-                }}
-            >
-                <input type="text" name="taskTitle" placeholder="Add a task" />
-                <button type="submit">Submit</button>
-            </form>
         </div>
     );
 }
