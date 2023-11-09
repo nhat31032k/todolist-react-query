@@ -17,7 +17,7 @@ export const useAddTaskMutation = () => {
         message.success("add task success");
         setTimeout(() => {
           queryClient.invalidateQueries('tasks');
-        }, 100);
+        }, 1000);
       },
       onError: () => {
         message.error("add task failed")
@@ -35,7 +35,7 @@ export const useDeleteTaskMutation = () => {
         message.success("Delete success")
         setTimeout(() => {
           queryClient.invalidateQueries('tasks');
-        }, 100);
+        }, 1000);
       },
       onError: () => {
         message.error("add task failed")
@@ -53,7 +53,7 @@ export const useUpdateTaskMutation = () => {
         message.success("Update success")
         setTimeout(() => {
           queryClient.invalidateQueries('tasks');
-        }, 100);
+        }, 1000);
       },
       onError: () => {
         message.error("add task failed")
